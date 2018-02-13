@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "436155018939",
+    "firebase_url": "https://autochopeira.firebaseio.com",
+    "project_id": "autochopeira",
+    "storage_bucket": "autochopeira.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436155018939:android:6b2e18d459e61a4e",
+        "android_client_info": {
+          "package_name": "br.com.autochoop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "436155018939-d4h2rd2a2skjhpknpicu2sutg3vq8k0k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.autochoop",
+            "certificate_hash": "5b692ca1764d4f93b05165167dafb861ced85c1f"
+          }
+        },
+        {
+          "client_id": "436155018939-k05rkmsdh7jnf3oh1sm7sd30t8ompqo6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEaUeGECj8zW0E_PiMyQo-Ky2leyVVhZg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "436155018939-k05rkmsdh7jnf3oh1sm7sd30t8ompqo6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

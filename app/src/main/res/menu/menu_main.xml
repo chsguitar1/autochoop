@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="br.com.autochoop.MainActivity" >
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_scan"
+        android:orderInCategory="1"
+        android:title="Scan"
+        app:showAsAction="always|withText" />
+    <item android:id="@+id/action_connect"
+        android:title="@string/action_connect"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_disconnect"
+        android:title="@string/action_disconnect"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_crlf"
+        android:title="@string/action_crlf"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
+</menu>
