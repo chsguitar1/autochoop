@@ -1,24 +1,27 @@
 package br.com.autochoop.model;
 
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.orm.SugarRecord;
 
 /**
  * Created by cristiano on 11/02/17.
  */
 @IgnoreExtraProperties
-public class Products  {
+public class Products  extends SugarRecord {
     Long idProdutct;
     String nameProduct;
     Double valueProduct;
+    String idEmploy;
 
 
     public Products() {
     }
 
-    public Products(Long idProdutct, String nameProduct, Double valueProduct) {
+    public Products(Long idProdutct, String nameProduct, Double valueProduct, String idEmploy) {
         this.idProdutct = idProdutct;
         this.nameProduct = nameProduct;
         this.valueProduct = valueProduct;
+        this.idEmploy = idEmploy;
     }
 
     public Long getIdProdutct() {
@@ -43,5 +46,23 @@ public class Products  {
 
     public void setValueProduct(Double valueProduct) {
         this.valueProduct = valueProduct;
+    }
+
+    public String getIdEmploy() {
+        return idEmploy;
+    }
+
+    public void setIdEmploy(String idEmploy) {
+        this.idEmploy = idEmploy;
+    }
+
+    @Override
+    public String toString() {
+        return "Products{" +
+                "idProdutct=" + idProdutct +
+                ", nameProduct='" + nameProduct + '\'' +
+                ", valueProduct=" + valueProduct +
+                ", idEmploy='" + idEmploy + '\'' +
+                '}';
     }
 }

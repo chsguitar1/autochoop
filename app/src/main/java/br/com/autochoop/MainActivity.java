@@ -17,8 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -39,12 +39,21 @@ import me.palazzetti.adktoolkit.AdkManager;
 import me.palazzetti.adktoolkit.response.AdkMessage;
 
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
-    @BindView(R.id.tv_cedito)
-    TextView tvCedito;
+
+    @BindView(R.id.imageView2)
+    ImageView imageView2;
+    @BindView(R.id.tv_product)
+    TextView tvProduct;
+    @BindView(R.id.tv_price_product)
+    TextView tvPriceProduct;
+    @BindView(R.id.textView6)
+    TextView tvDescription;
+    @BindView(R.id.textView5)
+    TextView textViewrs;
+    @BindView(R.id.tv_value_buy)
+    TextView tvValueBuy;
     private AdkManager mAdkManager;
 
     private static final String TAG = "ArduinoAccessory";
@@ -93,8 +102,6 @@ public class MainActivity extends AppCompatActivity  {
     };
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +120,7 @@ public class MainActivity extends AppCompatActivity  {
         }
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,8 +129,10 @@ public class MainActivity extends AppCompatActivity  {
                 mAdkManager.write(stringValue);
 
             }
-        });
+        });*/
+        tvDescription.setText("Este estilo de cerveja é considerado, por mim e muitos, ideal para dias quentes pois é bastante refrescante e nutritivo. Tanto é que cervejas sem álcool, na Alemanha, são praticamente todas feitas a base de Weissbier sendo, cientificamente comprovado, mais eficientes do que os atuais energéticos");
     }
+
 
     @Override
     protected void onResume() {
@@ -151,20 +160,21 @@ public class MainActivity extends AppCompatActivity  {
             Log.d(TAG, "mAccessory is null");
         }
     }
+
     @Override
     public void onDestroy() {
         // TODO Auto-generated method stub
 
-        try{
-            if(mUsbReceiver!=null)
+        try {
+            if (mUsbReceiver != null)
                 unregisterReceiver(mUsbReceiver);
-        }catch(Exception e)
-        {
+        } catch (Exception e) {
 
         }
         super.onDestroy();
 
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -211,7 +221,7 @@ public class MainActivity extends AppCompatActivity  {
 
         //  employ.setCardsEmploys(cardsEmploy);
 
-        Products products = new Products((long) 1, "CHOOP WEIS", 7.0);
+        Products products = new Products((long) 1, "CHOOP WEIS", 7.0, "");
         List<Products> productsList = new ArrayList<>();
         productsList.add(products);
 
@@ -302,7 +312,7 @@ public class MainActivity extends AppCompatActivity  {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add("fechar").setIcon(R.mipmap.ic_launcher).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.add("Configurar").setIcon(R.drawable.common_google_signin_btn_icon_dark).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -319,6 +329,9 @@ public class MainActivity extends AppCompatActivity  {
 
             return  super.onOptionsItemSelected(item);
         }*/
+        Intent it = new Intent(MainActivity.this, SettingEmployActivity.class);
+        startActivity(it);
+
         return true;
     }
 
@@ -329,7 +342,7 @@ public class MainActivity extends AppCompatActivity  {
 
             // this is where you handle the data you sent. You get it by calling
             // the getReading() function
-            tvCedito.setText("Flag: " + msg.toString());
+         //   tvCedito.setText("Flag: " + msg.toString());
         }
     };
 
@@ -345,33 +358,37 @@ public class MainActivity extends AppCompatActivity  {
             openAccessory(mAccessory);
         }
     }
+
     Runnable run = new Runnable() {
         public void run() {
-            while (!Thread.currentThread ().isInterrupted()) {
+            while (!Thread.currentThread().isInterrupted()) {
 
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                AdkMessage msg = mAdkManager.read();
-                                String buffer = msg.getString();
-                                if ( buffer.length() > 0 ) {
-                                    Log.e("recebe", buffer);
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        AdkMessage msg = mAdkManager.read();
+                        String buffer = msg.getString();
+                        if (buffer.length() > 0) {
+                            Log.e("recebe", buffer);
 
-                                }
-                            }
-                        });
+                        }
                     }
+                });
+            }
 
 
         }
     };
+
     public void run() {
         AdkMessage msg = mAdkManager.read();
 
-        if(!msg.isEmpty() && msg != null){
-           Log.e("arduino", msg.getString());
-          // tvCedito.setText(msg.getString());
+        if (!msg.isEmpty() && msg != null) {
+            Log.e("arduino", msg.getString());
+            // tvCedito.setText(msg.getString());
         }
 
     }
 
+
 }
+
