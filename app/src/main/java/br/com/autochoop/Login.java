@@ -42,14 +42,15 @@ public class Login extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mAuth = FirebaseAuth.getInstance();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
 
     }
@@ -64,7 +65,7 @@ public class Login extends AppCompatActivity {
 
     @OnClick(R.id.bt_login)
     public void onViewClicked() {
-        if(!teEmail.getText().toString().equals("") && !teSenha.getText().toString().equals("")){
+      /*  if(!teEmail.getText().toString().equals("") && !teSenha.getText().toString().equals("")){
             mAuth.signInWithEmailAndPassword(teEmail.getText().toString(), teSenha.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -73,9 +74,9 @@ public class Login extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "signInWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                Intent it = new Intent(Login.this,MainActivity.class);
+                              *//*  Intent it = new Intent(Login.this,Main3Activity.class);
                                 startActivity(it);
-                                finish();
+                                finish();*//*
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -87,6 +88,11 @@ public class Login extends AppCompatActivity {
                             // ...
                         }
                     });
+        }*/
+        if(teEmail.getText().toString().equals("admin") && teSenha.getText().toString().equals("admin")){
+            Intent it = new Intent(Login.this,MainActivity.class);
+            startActivity(it);
+            finish();
         }
     }
 }

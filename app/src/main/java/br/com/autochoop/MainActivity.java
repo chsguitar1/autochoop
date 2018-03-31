@@ -5,14 +5,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,17 +23,23 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.orm.SugarApp;
+import com.orm.query.Condition;
+import com.orm.query.Select;
+import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import br.com.autochoop.model.Cards;
 import br.com.autochoop.model.Employ;
 import br.com.autochoop.model.Products;
+import br.com.autochoop.model.Telemetria;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.palazzetti.adktoolkit.AdkManager;
@@ -46,16 +53,23 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView2;
     @BindView(R.id.tv_product)
     TextView tvProduct;
+    @BindView(R.id.tv_coin)
+    TextView tvCoin;
+    @BindView(R.id.tv_porlitro)
+    TextView tvPorlitro;
     @BindView(R.id.tv_price_product)
     TextView tvPriceProduct;
-    @BindView(R.id.textView6)
+    @BindView(R.id.tv_description)
     TextView tvDescription;
-    @BindView(R.id.textView5)
-    TextView textViewrs;
+    @BindView(R.id.tv_coin2)
+    TextView tvCoin2;
+    @BindView(R.id.textView7)
+    TextView textView7;
     @BindView(R.id.tv_value_buy)
     TextView tvValueBuy;
+    @BindView(R.id.textView)
+    TextView textView;
     private AdkManager mAdkManager;
-
     private static final String TAG = "ArduinoAccessory";
     private UsbManager mUsbManager;
     private PendingIntent mPermissionIntent;
@@ -100,12 +114,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+    private Menu menu;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main3);
         ButterKnife.bind(this);
         mAdkManager = new AdkManager(this);
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
@@ -119,6 +134,21 @@ public class MainActivity extends AppCompatActivity {
             openAccessory(mAccessory);
         }
 
+        if(Telemetria.listAll(Telemetria.class).isEmpty()){
+        Telemetria tel = new Telemetria(new Date(), 0);
+        tel.save();
+        }else{
+            Telemetria t = Telemetria.listAll(Telemetria.class).get(0);
+            Products products = Select.from(Products.class)
+                    .where(Condition.prop("idproduct")
+                            .eq(t.getIdproduct())).list().get(0);
+            if(products != null){
+                tvProduct.setText(products.getNameproduct());
+                tvDescription.setText("teste");
+                tvPriceProduct.setText(A.formatarValor(Double.parseDouble(products.getValueproduct())));
+            }
+        }
+
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });*/
-        tvDescription.setText("Este estilo de cerveja é considerado, por mim e muitos, ideal para dias quentes pois é bastante refrescante e nutritivo. Tanto é que cervejas sem álcool, na Alemanha, são praticamente todas feitas a base de Weissbier sendo, cientificamente comprovado, mais eficientes do que os atuais energéticos");
+        //tvDescription.setText("Este estilo de cerveja é considerado, por mim e muitos, ideal para dias quentes pois é bastante refrescante e nutritivo. Tanto é que cervejas sem álcool, na Alemanha, são praticamente todas feitas a base de Weissbier sendo, cientificamente comprovado, mais eficientes do que os atuais energéticos");
     }
 
 
@@ -180,7 +210,76 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         closeAccessory();
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add("salva").setIcon(R.drawable.ic_settings_white_24dp).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        this.menu = menu;
+        return true;
 
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getTitle().equals("salva")) {
+            authAdmin();
+
+            return true;
+        }
+        return false;
+    }
+   /* @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Configurar").setIcon(R.drawable.ic_settings_white_24dp);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+            *//*if(item.getItemId() == android.R.id.home) {
+                onBackPressed();
+            }else if (item.getTitle().equals("fechar")) {
+                checkItensOrder(order);
+            }else if(item.getItemId() == R.id.action_finish){
+                new SincronizationREST().logoutUser(this,MainActivity.USERLOGIN.getLoginusu());
+            }
+            return  super.onOptionsItemSelected(item);
+        }*//*
+        authAdmin();
+
+        return true;
+    }*/
+
+    @Override
+    public void onBackPressed() {
+
+    }
+
+    void authAdmin() {
+        new LovelyTextInputDialog(this)
+                // .setTopColorRes(R.color.green_900)
+                .setMessage("Digite sua senha!")
+                .setIconTintColor(R.color.red_900)
+                .setInputType(InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                .setTitle(R.string.app_name)
+                .setConfirmButton(android.R.string.ok, new LovelyTextInputDialog.OnTextInputConfirmListener() {
+                    @Override
+                    public void onTextInputConfirmed(String text) {
+                        if (text.equals("admin")) {
+                           goSetup();
+
+                        }
+                    }
+                })
+
+                .show();
+    }
+    void goSetup(){
+        Intent it = new Intent(MainActivity.this, SettingEmployActivity.class);
+        startActivity(it);
+    }
 
     private void openAccessory(UsbAccessory accessory) {
         mFileDescriptor = mUsbManager.openAccessory(accessory);
@@ -221,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
 
         //  employ.setCardsEmploys(cardsEmploy);
 
-        Products products = new Products((long) 1, "CHOOP WEIS", 7.0, "");
+        Products products = new Products("1", "CHOOP WEIS", "7.0", "");
         List<Products> productsList = new ArrayList<>();
         productsList.add(products);
 
@@ -310,30 +409,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add("Configurar").setIcon(R.drawable.common_google_signin_btn_icon_dark).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-            /*if(item.getItemId() == android.R.id.home) {
-                onBackPressed();
-            }else if (item.getTitle().equals("fechar")) {
-                checkItensOrder(order);
-            }else if(item.getItemId() == R.id.action_finish){
-                new SincronizationREST().logoutUser(this,MainActivity.USERLOGIN.getLoginusu());
-            }
-
-            return  super.onOptionsItemSelected(item);
-        }*/
-        Intent it = new Intent(MainActivity.this, SettingEmployActivity.class);
-        startActivity(it);
-
-        return true;
-    }
 
     Handler mHandler = new Handler() {
         @Override
@@ -342,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
 
             // this is where you handle the data you sent. You get it by calling
             // the getReading() function
-         //   tvCedito.setText("Flag: " + msg.toString());
+            //   tvCedito.setText("Flag: " + msg.toString());
         }
     };
 

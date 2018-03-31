@@ -4,11 +4,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ViewGroup;
-
+import com.firebase.client.Query;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.Query;
+
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public abstract class FirebaseRecyclerAdapter<ViewHolder extends RecyclerView.Vi
             mItems = new ArrayList<T>();
             mKeys = new ArrayList<String>();
         }
-        query.addChildEventListener(mListener);
+        query.addChildEventListener((com.firebase.client.ChildEventListener) mListener);
     }
 
     private ChildEventListener mListener = new ChildEventListener() {
@@ -184,7 +184,7 @@ public abstract class FirebaseRecyclerAdapter<ViewHolder extends RecyclerView.Vi
      * ALWAYS call this method before destroying the adapter to remove the listener.
      */
     public void destroy() {
-        mQuery.removeEventListener(mListener);
+        mQuery.removeEventListener((com.firebase.client.ChildEventListener) mListener);
     }
 
     /**

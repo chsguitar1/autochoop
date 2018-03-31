@@ -45,6 +45,9 @@ dependencies {
     compile "net.qiujuer.genius:ui:${genius_version}"
     compile "net.qiujuer.genius:res:${genius_version}"
     compile 'com.github.satyan:sugar:1.5'
+    compile 'com.firebase:firebase-client-android:2.3.1'
+    compile 'org.parceler:parceler-api:1.1.10'
+    annotationProcessor 'org.parceler:parceler:1.1.10'
 }
 
 apply plugin: 'com.google.gms.google-services'

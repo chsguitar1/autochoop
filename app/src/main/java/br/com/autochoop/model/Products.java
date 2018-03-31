@@ -8,44 +8,44 @@ import com.orm.SugarRecord;
  */
 @IgnoreExtraProperties
 public class Products  extends SugarRecord {
-    Long idProdutct;
-    String nameProduct;
-    Double valueProduct;
+    String idproduct;
+    String nameproduct;
+    String valueproduct;
     String idEmploy;
 
 
     public Products() {
     }
 
-    public Products(Long idProdutct, String nameProduct, Double valueProduct, String idEmploy) {
-        this.idProdutct = idProdutct;
-        this.nameProduct = nameProduct;
-        this.valueProduct = valueProduct;
+    public Products(String idProdutct, String nameProduct, String valueProduct, String idEmploy) {
+        this.idproduct = idProdutct;
+        this.nameproduct = nameProduct;
+        this.valueproduct = valueProduct;
         this.idEmploy = idEmploy;
     }
 
-    public Long getIdProdutct() {
-        return idProdutct;
+    public String getIdproduct() {
+        return idproduct;
     }
 
-    public void setIdProdutct(Long idProdutct) {
-        this.idProdutct = idProdutct;
+    public void setIdproduct(String idproduct) {
+        this.idproduct = idproduct;
     }
 
-    public String getNameProduct() {
-        return nameProduct;
+    public String getNameproduct() {
+        return nameproduct;
     }
 
-    public void setNameProduct(String nameProduct) {
-        this.nameProduct = nameProduct;
+    public void setNameproduct(String nameproduct) {
+        this.nameproduct = nameproduct;
     }
 
-    public Double getValueProduct() {
-        return valueProduct;
+    public String getValueproduct() {
+        return valueproduct;
     }
 
-    public void setValueProduct(Double valueProduct) {
-        this.valueProduct = valueProduct;
+    public void setValueproduct(String valueproduct) {
+        this.valueproduct = valueproduct;
     }
 
     public String getIdEmploy() {
@@ -59,9 +59,9 @@ public class Products  extends SugarRecord {
     @Override
     public String toString() {
         return "Products{" +
-                "idProdutct=" + idProdutct +
-                ", nameProduct='" + nameProduct + '\'' +
-                ", valueProduct=" + valueProduct +
+                "idproduct=" + idproduct +
+                ", nameproduct='" + nameproduct + '\'' +
+                ", valueproduct=" + valueproduct +
                 ", idEmploy='" + idEmploy + '\'' +
                 '}';
     }

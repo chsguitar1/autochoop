@@ -25,8 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main2"
+            android:name=".Login"
+            android:label="@string/app_name"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -42,6 +42,7 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/usb_accessory_filter" />
         </activity>
+
         <meta-data
             android:name="DATABASE"
             android:value="autochoop.db" />
@@ -54,16 +55,14 @@
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="br.com.autochoop.model" />
+
         <activity android:name=".Configuration" />
+
         <activity
-            android:name=".Login"
-            android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="sensorPortrait"/>
-        <activity android:name=".SettingEmployActivity"
+            android:name=".SettingEmployActivity"
             android:label="@string/config_products"
-            android:screenOrientation="sensorPortrait"
-            ></activity>
+            android:screenOrientation="sensorPortrait" />
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>

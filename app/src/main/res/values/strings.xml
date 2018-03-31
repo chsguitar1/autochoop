@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AutoChopeira</string>
+    <string name="app_name">AutoChoop</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main2">MainActivity</string>
     <string name="title_activity_login">Login</string>
@@ -42,6 +42,6 @@
         completions."
     </string>
     <string name="coin">R$</string>
-
+    <string name="firebase_location" translatable="false">https://autochopeira.firebaseio.com/autobeer</string>
 
 </resources>
