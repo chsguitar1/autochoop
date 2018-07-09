@@ -24,8 +24,10 @@ import com.google.firebase.database.ValueEventListener;
 import net.qiujuer.genius.ui.widget.Button;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import br.com.autochoop.model.Machine;
 import br.com.autochoop.model.Products;
 import br.com.autochoop.model.Telemetria;
 import butterknife.BindView;
@@ -43,6 +45,8 @@ public class SettingEmployActivity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef;
     RecyclerView.Adapter adapter;
+    @BindView(R.id.rv_machines)
+    RecyclerView rvMachines;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +54,16 @@ public class SettingEmployActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting_employ);
         ButterKnife.bind(this);
         rvProducts.setHasFixedSize(true);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        rvProducts.setLayoutManager(mLayoutManager);
+        rvMachines.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManagerP = new LinearLayoutManager(getApplicationContext());
+        rvProducts.setLayoutManager(mLayoutManagerP);
         rvProducts.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         rvProducts.setItemAnimator(new DefaultItemAnimator());
+
+        RecyclerView.LayoutManager mLayoutManagerM = new LinearLayoutManager(getApplicationContext());
+        rvMachines.setLayoutManager(mLayoutManagerM);
+        rvMachines.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        rvMachines.setItemAnimator(new DefaultItemAnimator());
 
     }
 
@@ -61,28 +71,33 @@ public class SettingEmployActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_search:
-setupRecyclerView();
+                setupRecyclerViewMachine();
                 break;
 
         }
     }
 
-    void setupRecyclerView() {
+    void setupRecyclerViewProducts() {
 
         if (!teIdemploy.getText().toString().equals("")) {
             final List<Products> listBeer = new ArrayList<>();
-          myRef =   database.getReference("autobeer");
+            myRef = database.getReference("autobeer");
             Query query = myRef.child("products").orderByChild("idEmploy").equalTo(teIdemploy.getText().toString());
+            if (query != null) {
+                A.IDEMPLOY = teIdemploy.getText().toString();
+            }
             query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    System.out.println("veio "+dataSnapshot);
+                    rvProducts.setAdapter(null);
+                    listBeer.clear();
+                    System.out.println("veio " + dataSnapshot);
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         Products product = data.getValue(Products.class);
                         listBeer.add(product);
                     }
-                    System.out.println("array "+listBeer.toString());
-                    adapter = new RecyclerViewAdapter(SettingEmployActivity.this, listBeer);
+                    System.out.println("array " + listBeer.toString());
+                    adapter = new RecyclerViewProducts(SettingEmployActivity.this, listBeer);
                     rvProducts.setAdapter(adapter);
 
                 }
@@ -95,14 +110,49 @@ setupRecyclerView();
         }
 
     }
+    void setupRecyclerViewMachine() {
 
-    public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+        if (!teIdemploy.getText().toString().equals("")) {
+            final List<Machine> listMachine = new ArrayList<>();
+            myRef = database.getReference("autobeer");
+            Query query = myRef.child("machines").orderByChild("idEmploy").equalTo(teIdemploy.getText().toString());
+            if (query != null) {
+                A.IDEMPLOY = teIdemploy.getText().toString();
+            }
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    rvMachines.setAdapter(null);
+                    listMachine.clear();
+                    System.out.println("veio " + dataSnapshot);
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        Machine machine = data.getValue(Machine.class);
+                        listMachine.add(machine);
+                    }
+                    System.out.println("array " + listMachine.toString());
+
+
+                    adapter = new RecyclerViewMachine(SettingEmployActivity.this, listMachine);
+                    rvMachines.setAdapter(adapter);
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    A.showMsg(databaseError.getMessage() + "\n" + databaseError.getDetails(), SettingEmployActivity.this);
+                }
+            });
+        }
+
+    }
+
+    public class RecyclerViewProducts extends RecyclerView.Adapter<RecyclerViewProducts.ViewHolder> {
 
         Context context;
         List<Products> productsList;
 
 
-        public RecyclerViewAdapter(Context context, List<Products> TempList) {
+        public RecyclerViewProducts(Context context, List<Products> TempList) {
 
             this.productsList = TempList;
 
@@ -128,14 +178,17 @@ setupRecyclerView();
             holder.btSel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Products.deleteAll(Products.class);
+                    Telemetria.deleteAll(Telemetria.class);
                     product.save();
-                    Telemetria t = Telemetria.listAll(Telemetria.class).get(0);
-                    System.out.println("teste : "+Telemetria.listAll(Telemetria.class));
-                    t.setIdproduct(Integer.parseInt(product.getIdproduct()));
+                    Telemetria t = new Telemetria(new Date(), Integer.parseInt(product.getIdproduct()));
                     t.save();
-                    Intent it = new Intent(SettingEmployActivity.this,MainActivity.class);
-                    startActivity(it);
-                    finish();
+                    if(A.IDMACHINE  != null){
+                        myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("product").setValue(product);
+                        Intent it = new Intent(SettingEmployActivity.this, MainActivity.class);
+                        startActivity(it);
+                        finish();
+                    }
                 }
             });
 
@@ -148,12 +201,10 @@ setupRecyclerView();
         }
 
 
-
         class ViewHolder extends RecyclerView.ViewHolder {
             TextView name;
             TextView price;
             Button btSel;
-
 
 
             public ViewHolder(View itemView) {
@@ -168,7 +219,66 @@ setupRecyclerView();
 
         }
     }
+    public class RecyclerViewMachine extends RecyclerView.Adapter<RecyclerViewMachine.ViewHolder> {
+
+        Context context;
+        List<Machine> machineList;
 
 
+        public RecyclerViewMachine(Context context, List<Machine> TempList) {
+
+            this.machineList = TempList;
+
+            this.context = context;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_machine, parent, false);
+
+            ViewHolder viewHolder = new ViewHolder(view);
+
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+
+            final Machine machine = machineList.get(position);
+            holder.name.setText(machine.getIdmachine());
+
+            holder.btSel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    A.IDMACHINE = machine;
+                    setupRecyclerViewProducts();
+                }
+            });
+
+        }
+
+        @Override
+        public int getItemCount() {
+
+            return machineList.size();
+        }
+
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            TextView name;
+            Button btSel;
+
+
+            public ViewHolder(View itemView) {
+
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+                name = (TextView) itemView.findViewById(R.id.tv_name_machine);
+                btSel = (Button) itemView.findViewById(R.id.bt_sel_machine);
+            }
+
+        }
+    }
 
 }

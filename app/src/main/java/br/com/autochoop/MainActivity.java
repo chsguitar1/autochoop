@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -21,9 +20,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.orm.SugarApp;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.orm.query.Condition;
 import com.orm.query.Select;
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
@@ -32,25 +34,22 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import br.com.autochoop.model.Cards;
-import br.com.autochoop.model.Employ;
+import br.com.autochoop.model.Machine;
 import br.com.autochoop.model.Products;
 import br.com.autochoop.model.Telemetria;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import me.palazzetti.adktoolkit.AdkManager;
-import me.palazzetti.adktoolkit.response.AdkMessage;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
-    @BindView(R.id.imageView2)
-    ImageView imageView2;
+
     @BindView(R.id.tv_product)
     TextView tvProduct;
     @BindView(R.id.tv_coin)
@@ -63,27 +62,32 @@ public class MainActivity extends AppCompatActivity {
     TextView tvDescription;
     @BindView(R.id.tv_coin2)
     TextView tvCoin2;
-    @BindView(R.id.textView7)
-    TextView textView7;
+    /* @BindView(R.id.textView7)
+     TextView textView7;*/
     @BindView(R.id.tv_value_buy)
     TextView tvValueBuy;
     @BindView(R.id.textView)
     TextView textView;
-    private AdkManager mAdkManager;
+    @BindView(R.id.tv_value_buy2)
+    TextView tvValueBuy2;
+    //private AdkManager mAdkManager;
     private static final String TAG = "ArduinoAccessory";
-    private UsbManager mUsbManager;
+
+    /*private UsbManager mUsbManager;
     private PendingIntent mPermissionIntent;
     private boolean mPermissionRequestPending;
-    private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";*/
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("autobeer");
-    UsbAccessory mAccessory;
+  /*  UsbAccessory mAccessory;
     ParcelFileDescriptor mFileDescriptor;
     FileInputStream mInputStream;
-    FileOutputStream mOutputStream;
+    FileOutputStream mOutputStream;*/
 
 
-    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+
+
+  /*  private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -93,11 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     UsbAccessory accessory = manager.getAccessoryList()[0];
                     if (intent.getBooleanExtra(
                             UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        // openAccessory(accessory);
-                        mAdkManager.open();
-                        Thread thread = new Thread(run);
-                        thread.start();
-
+                        openAccessory(accessory);
                     } else {
                         Log.d(TAG, "permission denied for accessory "
                                 + accessory);
@@ -108,12 +108,12 @@ public class MainActivity extends AppCompatActivity {
                 UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
                 UsbAccessory accessory = manager.getAccessoryList()[0];
                 if (accessory != null && accessory.equals(mAccessory)) {
-                    //closeAccessory();
-                    mAdkManager.close();
+                    closeAccessory();
                 }
             }
         }
-    };
+    };*/
+
     private Menu menu;
 
 
@@ -122,31 +122,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
         ButterKnife.bind(this);
-        mAdkManager = new AdkManager(this);
-        mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        //mAdkManager = new AdkManager(this);
+   /*     mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);*/
+      /*  IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
         registerReceiver(mUsbReceiver, filter);
 
         if (getLastNonConfigurationInstance() != null) {
             mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
             openAccessory(mAccessory);
-        }
+        }*/
 
-        if(Telemetria.listAll(Telemetria.class).isEmpty()){
-        Telemetria tel = new Telemetria(new Date(), 0);
-        tel.save();
-        }else{
-            Telemetria t = Telemetria.listAll(Telemetria.class).get(0);
+        List<Telemetria> telemetrias = Telemetria.listAll(Telemetria.class);
+        System.out.println("telemetrias" + telemetrias.size());
+        if (telemetrias == null || telemetrias.size() == 0) {
+            Telemetria tel = new Telemetria(new Date(), 0);
+            tel.save();
+        } else {
+            Telemetria t = telemetrias.get(0);
             Products products = Select.from(Products.class)
                     .where(Condition.prop("idproduct")
                             .eq(t.getIdproduct())).list().get(0);
-            if(products != null){
+            if (products != null) {
                 tvProduct.setText(products.getNameproduct());
-                tvDescription.setText("teste");
+                tvDescription.setText(products.getDescription());
                 tvPriceProduct.setText(A.formatarValor(Double.parseDouble(products.getValueproduct())));
             }
+
         }
 
 
@@ -161,6 +164,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
         //tvDescription.setText("Este estilo de cerveja é considerado, por mim e muitos, ideal para dias quentes pois é bastante refrescante e nutritivo. Tanto é que cervejas sem álcool, na Alemanha, são praticamente todas feitas a base de Weissbier sendo, cientificamente comprovado, mais eficientes do que os atuais energéticos");
+        setupValues();
+    }
+    void setupValues() {
+
+        myRef = database.getReference("autobeer");
+        Query queryExtract = myRef.child("machines").orderByChild("idmachine").equalTo("150");
+        if (queryExtract != null) {
+
+        }
+        queryExtract.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                System.out.println("veio "+dataSnapshot);
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    Machine machine = data.getValue(Machine.class);
+                    calculateValues(machine);
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                A.showMsg(databaseError.getMessage() + "\n" + databaseError.getDetails(), MainActivity.this);
+            }
+        });
+
+
+
+    }
+
+    private void calculateValues(Machine machine) {
+      //  Double balance =  Double.parseDouble(tvValueBuy.getText().toString());
+
+
     }
 
 
@@ -168,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //
-        if (mInputStream != null && mOutputStream != null) {
+        /*if (mInputStream != null && mOutputStream != null) {
 
             return;
         }
@@ -176,8 +214,8 @@ public class MainActivity extends AppCompatActivity {
         UsbAccessory accessory = (accessories == null ? null : accessories[0]);
         if (accessory != null) {
             if (mUsbManager.hasPermission(accessory)) {
-                // openAccessory(accessory);
-                mAdkManager.open();
+                openAccessory(accessory);
+                //mAdkManager.open();
             } else {
                 synchronized (mUsbReceiver) {
                     if (!mPermissionRequestPending) {
@@ -188,19 +226,12 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             Log.d(TAG, "mAccessory is null");
-        }
+        }*/
     }
 
     @Override
     public void onDestroy() {
-        // TODO Auto-generated method stub
-
-        try {
-            if (mUsbReceiver != null)
-                unregisterReceiver(mUsbReceiver);
-        } catch (Exception e) {
-
-        }
+        //  unregisterReceiver(mUsbReceiver);
         super.onDestroy();
 
     }
@@ -208,8 +239,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        closeAccessory();
+        // closeAccessory();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -218,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -268,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onTextInputConfirmed(String text) {
                         if (text.equals("admin")) {
-                           goSetup();
+                            goSetup();
 
                         }
                     }
@@ -276,27 +309,37 @@ public class MainActivity extends AppCompatActivity {
 
                 .show();
     }
-    void goSetup(){
+
+    void goSetup() {
         Intent it = new Intent(MainActivity.this, SettingEmployActivity.class);
         startActivity(it);
     }
 
-    private void openAccessory(UsbAccessory accessory) {
+   /* @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+       *//* if (mAccessory != null) {
+            return mAccessory;
+        } else {
+            return super.onRetainNonConfigurationInstance();
+        }*//*
+    }*/
+
+    /*private void openAccessory(UsbAccessory accessory) {
         mFileDescriptor = mUsbManager.openAccessory(accessory);
         if (mFileDescriptor != null) {
             mAccessory = accessory;
             FileDescriptor fd = mFileDescriptor.getFileDescriptor();
             mInputStream = new FileInputStream(fd);
             mOutputStream = new FileOutputStream(fd);
-            mAdkManager.open();
+//            mAdkManager.open();
             Log.d(TAG, "accessory opened");
         } else {
             Log.d(TAG, "accessory open fail");
         }
-    }
+    }*/
 
 
-    private void closeAccessory() {
+   /* private void closeAccessory() {
         try {
             if (mFileDescriptor != null) {
                 mFileDescriptor.close();
@@ -306,28 +349,9 @@ public class MainActivity extends AppCompatActivity {
             mFileDescriptor = null;
             mAccessory = null;
         }
-    }
+    }*/
 
-    private void saveData() {
 
-        Cards cards = new Cards((long) 1, "0152", 50.0);
-        Cards card2 = new Cards((long) 2, "0153", 50.0);
-        Cards card3 = new Cards((long) 3, "0154", 50.0);
-        List<Cards> cardsList = new ArrayList<>();
-        cardsList.add(cards);
-        cardsList.add(card2);
-        cardsList.add(card3);
-
-        //  employ.setCardsEmploys(cardsEmploy);
-
-        Products products = new Products("1", "CHOOP WEIS", "7.0", "");
-        List<Products> productsList = new ArrayList<>();
-        productsList.add(products);
-
-        Employ employ = new Employ((long) 1, "teste de firebase", productsList, cardsList);
-        myRef.child("empĺoy").child(String.valueOf(employ.getIdEmploy())).setValue(employ);
-
-    }
 
     /*public void onClickStart() {
 
@@ -399,14 +423,34 @@ public class MainActivity extends AppCompatActivity {
 
         buffer[0] = (byte) 1; // button says off, light is on
 
-        if (mOutputStream != null) {
+       /* if (mOutputStream != null) {
             try {
                 mOutputStream.write(10000);
 
             } catch (IOException e) {
                 Log.e(TAG, "write failed", e);
             }
-        }
+        }*/
+    }
+
+    public void writeMsg(View v) {
+
+        byte[] buffer = new byte[1];
+
+
+        buffer[0] = (byte) 0; // button says on, light is off
+
+        buffer[0] = (byte) 1; // button says off, light is on
+
+        /*if (mInputStream != null) {
+            try {
+                mInputStream.read();
+                System.out.println();
+
+            } catch (IOException e) {
+                Log.e(TAG, "write failed", e);
+            }
+        }*/
     }
 
 
@@ -421,7 +465,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void setupAccessory() {
+   /* private void setupAccessory() {
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(
                 ACTION_USB_PERMISSION), 0);
@@ -432,15 +476,15 @@ public class MainActivity extends AppCompatActivity {
             mAccessory = (UsbAccessory) getLastNonConfigurationInstance();
             openAccessory(mAccessory);
         }
-    }
+    }*/
 
-    Runnable run = new Runnable() {
+   /* Runnable run = new Runnable() {
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
 
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        AdkMessage msg = mAdkManager.read();
+                   //     AdkMessage msg = mAdkManager.read();
                         String buffer = msg.getString();
                         if (buffer.length() > 0) {
                             Log.e("recebe", buffer);
@@ -452,17 +496,17 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-    };
+    };*/
 
-    public void run() {
-        AdkMessage msg = mAdkManager.read();
+    /*public void run() {
+       // AdkMessage msg = mAdkManager.read();
 
         if (!msg.isEmpty() && msg != null) {
             Log.e("arduino", msg.getString());
             // tvCedito.setText(msg.getString());
         }
 
-    }
+    }*/
 
 
 }

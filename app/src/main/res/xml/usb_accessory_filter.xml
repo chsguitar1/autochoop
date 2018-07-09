@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <usb-accessory
-        versionNumber="1.0"
-        model="DemoKit"
-        manufacturer="Google, Inc."/>
+        manufacturer="Manufacturer" model="Model" version="1.0"/>
 </resources>

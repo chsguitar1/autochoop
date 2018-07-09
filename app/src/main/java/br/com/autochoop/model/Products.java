@@ -12,16 +12,18 @@ public class Products  extends SugarRecord {
     String nameproduct;
     String valueproduct;
     String idEmploy;
+    String description;
 
 
     public Products() {
     }
 
-    public Products(String idProdutct, String nameProduct, String valueProduct, String idEmploy) {
-        this.idproduct = idProdutct;
-        this.nameproduct = nameProduct;
-        this.valueproduct = valueProduct;
+    public Products(String idproduct, String nameproduct, String valueproduct, String idEmploy, String description) {
+        this.idproduct = idproduct;
+        this.nameproduct = nameproduct;
+        this.valueproduct = valueproduct;
         this.idEmploy = idEmploy;
+        this.description = description;
     }
 
     public String getIdproduct() {
@@ -56,13 +58,11 @@ public class Products  extends SugarRecord {
         this.idEmploy = idEmploy;
     }
 
-    @Override
-    public String toString() {
-        return "Products{" +
-                "idproduct=" + idproduct +
-                ", nameproduct='" + nameproduct + '\'' +
-                ", valueproduct=" + valueproduct +
-                ", idEmploy='" + idEmploy + '\'' +
-                '}';
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -14,11 +14,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import br.com.autochoop.model.Machine;
+
 
 /**
  * Created by cristiano on 09/09/15.
  */
 public abstract class A {
+    public  static  String IDEMPLOY;
+    public  static Machine IDMACHINE;
 
     public static String formatarValor(BigDecimal numero) {
         String retorno = "";
