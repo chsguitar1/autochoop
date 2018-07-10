@@ -13,6 +13,7 @@ public class Machine {
     Products products;
 
 
+
     public Machine() {
     }
 

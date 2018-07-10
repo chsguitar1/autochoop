@@ -13,6 +13,7 @@ public class Products  extends SugarRecord {
     String valueproduct;
     String idEmploy;
     String description;
+    boolean status;
 
 
     public Products() {
@@ -64,5 +65,13 @@ public class Products  extends SugarRecord {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

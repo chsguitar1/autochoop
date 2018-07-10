@@ -93,8 +93,11 @@ public class SettingEmployActivity extends AppCompatActivity {
                     listBeer.clear();
                     System.out.println("veio " + dataSnapshot);
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
+
                         Products product = data.getValue(Products.class);
-                        listBeer.add(product);
+                        if(product.isStatus()){
+                            listBeer.add(product);
+                        }
                     }
                     System.out.println("array " + listBeer.toString());
                     adapter = new RecyclerViewProducts(SettingEmployActivity.this, listBeer);
@@ -127,11 +130,11 @@ public class SettingEmployActivity extends AppCompatActivity {
                     System.out.println("veio " + dataSnapshot);
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         Machine machine = data.getValue(Machine.class);
-                        listMachine.add(machine);
+                        if(machine.isStatus()){
+                            listMachine.add(machine);
+                        }
                     }
                     System.out.println("array " + listMachine.toString());
-
-
                     adapter = new RecyclerViewMachine(SettingEmployActivity.this, listMachine);
                     rvMachines.setAdapter(adapter);
 
