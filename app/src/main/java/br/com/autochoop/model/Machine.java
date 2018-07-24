@@ -10,12 +10,13 @@ public class Machine {
     String idEmploy;
     String idmachine;
     boolean status;
-    Products products;
+    Products product;
     boolean sale;
-    Double extactvalue;
+    Double extractvalue;
     boolean online;
     String idcard;
     Cards cards;
+    Double valuecredcard;
 
 
     public String getIdEmploy() {
@@ -42,12 +43,12 @@ public class Machine {
         this.status = status;
     }
 
-    public Products getProducts() {
-        return products;
+    public Products getProduct() {
+        return product;
     }
 
-    public void setProducts(Products products) {
-        this.products = products;
+    public void setProduct(Products product) {
+        this.product = product;
     }
 
     public boolean isSale() {
@@ -58,12 +59,12 @@ public class Machine {
         this.sale = sale;
     }
 
-    public Double getExtactvalue() {
-        return extactvalue;
+    public Double getExtractvalue() {
+        return extractvalue;
     }
 
-    public void setExtactvalue(Double extactvalue) {
-        this.extactvalue = extactvalue;
+    public void setExtractvalue(Double extractvalue) {
+        this.extractvalue = extractvalue;
     }
 
     public boolean isOnline() {
@@ -90,18 +91,27 @@ public class Machine {
         this.cards = cards;
     }
 
+    public Double getValuecredcard() {
+        return valuecredcard;
+    }
+
+    public void setValuecredcard(Double valuecredcard) {
+        this.valuecredcard = valuecredcard;
+    }
+
     @Override
     public String toString() {
         return "Machine{" +
                 "idEmploy='" + idEmploy + '\'' +
                 ", idmachine='" + idmachine + '\'' +
                 ", status=" + status +
-                ", products=" + products +
+                ", product=" + product +
                 ", sale=" + sale +
-                ", extactvalue=" + extactvalue +
+                ", extractvalue=" + extractvalue +
                 ", online=" + online +
                 ", idcard='" + idcard + '\'' +
                 ", cards=" + cards +
+                ", valuecredcard=" + valuecredcard +
                 '}';
     }
 }

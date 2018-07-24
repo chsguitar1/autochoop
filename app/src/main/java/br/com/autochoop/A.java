@@ -9,6 +9,7 @@ import com.yarolegovich.lovelydialog.LovelyInfoDialog;
 import com.yarolegovich.lovelydialog.LovelyProgressDialog;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -54,6 +55,15 @@ public abstract class A {
     public static String dataParaString(Date data) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            return sdf.format(data);
+        } catch (Exception e) {
+            Log.e("afaLog","Houve um problema ao obter uma data (data para string)"+e.getMessage());
+            return null;
+        }
+    }
+    public static String timeParaString(Timestamp data) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
             return sdf.format(data);
         } catch (Exception e) {
             Log.e("afaLog","Houve um problema ao obter uma data (data para string)"+e.getMessage());

@@ -25,7 +25,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import br.com.autochoop.model.Cards;
 import br.com.autochoop.model.Machine;
 import br.com.autochoop.model.Products;
 import br.com.autochoop.model.Sale;
@@ -52,14 +51,15 @@ public class MainActivity extends AppCompatActivity {
     TextView tvCoin2;
     /* @BindView(R.id.textView7)
      TextView textView7;*/
-    @BindView(R.id.tv_value_buy)
+    @BindView(R.id.tv_value_buy2)
     TextView tvValueBuy;
     @BindView(R.id.textView)
     TextView textView;
-    @BindView(R.id.tv_value_buy2)
+    @BindView(R.id.tv_value_buy)
     TextView tvValueBuy2;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("autobeer");
+    DatabaseReference myRefCard = database.getReference("autobeer");
     boolean operationSale = false;
     Sale sale ;
     Machine machine;
@@ -144,12 +144,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
         //tvDescription.setText("Este estilo de cerveja é considerado, por mim e muitos, ideal para dias quentes pois é bastante refrescante e nutritivo. Tanto é que cervejas sem álcool, na Alemanha, são praticamente todas feitas a base de Weissbier sendo, cientificamente comprovado, mais eficientes do que os atuais energéticos");
-        setupValues();
+    //    setupValues();
       //  setupCard();
     }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        setupValues();
+    }
+
     void setupValues() {
         if(A.IDMACHINE != null) {
-            myRef = database.getReference("autobeer");
+           // myRef = database.getReference("autobeer");
             Query queryExtract = myRef.child("machines").orderByChild("idmachine").equalTo(A.IDMACHINE.getIdmachine());
             if (queryExtract != null) {
 
@@ -204,8 +211,8 @@ if(A.IDMACHINE != null) {
            }
        };
        myRef.addValueEventListener(postvalue);*/
-    myRef = database.getReference("autobeer");
-    Query queryExtract = myRef.child("cards").child(A.IDMACHINE.getIdcard());
+   // myRef = database.getReference("autobeer/cards");
+    Query queryExtract = myRefCard.child("cards").child(A.IDMACHINE.getIdcard()).equalTo(A.IDMACHINE.getIdcard());
     if (queryExtract != null) {
 
     }
@@ -223,8 +230,8 @@ if(A.IDMACHINE != null) {
 }
     }
     private void newSale() {
-     //  setupCard();
-        System.out.println("machine"+valueCreditCard);
+
+        System.out.println("machine:="+valueCreditCard);
         operationSale = true;
        sale =  new Sale();
         sale.setMachine(machine);
@@ -238,20 +245,23 @@ if(A.IDMACHINE != null) {
         operationSale = false;
         sale.setStatus(0);
         sale.setValue(totValue);
-        myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("sale").setValue(false);
+
         myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("extractvalue").setValue(0.0);
-        myRef.child("cards").child(A.IDMACHINE.getIdEmploy()).child("valuecredcard").setValue(this.machine.getCards().getValuecredcard() - totValue);
-        myRef.child("sale").setValue(sale);
+        myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("valuecredcard").setValue(0.0);
+        myRef.child("cards").child(A.IDMACHINE.getIdcard()).child("valuecredcard").setValue(this.machine.getValuecredcard() - totValue);
+        myRef.child("sales").child(A.timeParaString(sale.getDateSale())).child(A.IDMACHINE.getIdmachine()).setValue(sale);
+        tvValueBuy2.setText(A.formatarValor(0.00));
+        tvValueBuy.setText(A.formatarValor(0.00));
 
 
     }
 
     private void calculateValues() {
-        if(valueCreditCard >= totValue){
-            Double productValue = Double.parseDouble(machine.getProducts().getValueproduct().replace(".","").replace(",","."));
-            Double extractValue = machine.getExtactvalue() / 1000;
+        if(machine.getValuecredcard() >= totValue){
+            Double productValue = Double.parseDouble(machine.getProduct().getValueproduct().replace(".","").replace(",","."));
+            Double extractValue = machine.getExtractvalue() / 1000;
             totValue = extractValue * productValue;
-            tvValueBuy2.setText(A.formatarValor(machine.getCards().getValuecredcard() - totValue));
+            tvValueBuy2.setText(A.formatarValor(machine.getValuecredcard() - totValue));
             tvValueBuy.setText(A.formatarValor(totValue));
 
         }else{
