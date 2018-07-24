@@ -7,38 +7,33 @@ import com.google.firebase.database.IgnoreExtraProperties;
  */
 @IgnoreExtraProperties
 public class Cards {
-    Long idCard;
-    String codCard;
-    Double valueCreditCard;
+    String idEmploy;
+    String idcard;
+    Double valuecredcard;
 
 
-    public Cards(Long idCard, String codCard, Double valueCreditCard) {
-        this.idCard = idCard;
-        this.codCard = codCard;
-        this.valueCreditCard = valueCreditCard;
+
+    public String getIdEmploy() {
+        return idEmploy;
     }
 
-    public Long getIdCard() {
-        return idCard;
+    public void setIdEmploy(String idEmploy) {
+        this.idEmploy = idEmploy;
     }
 
-    public void setIdCard(Long idCard) {
-        this.idCard = idCard;
+    public String getIdcard() {
+        return idcard;
     }
 
-    public String getCodCard() {
-        return codCard;
+    public void setIdcard(String idcard) {
+        this.idcard = idcard;
     }
 
-    public void setCodCard(String codCard) {
-        this.codCard = codCard;
+    public Double getValuecredcard() {
+        return valuecredcard;
     }
 
-    public Double getValueCreditCard() {
-        return valueCreditCard;
-    }
-
-    public void setValueCreditCard(Double valueCreditCard) {
-        this.valueCreditCard = valueCreditCard;
+    public void setValuecredcard(Double valuecredcard) {
+        this.valuecredcard = valuecredcard;
     }
 }

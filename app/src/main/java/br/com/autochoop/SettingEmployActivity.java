@@ -188,6 +188,7 @@ public class SettingEmployActivity extends AppCompatActivity {
                     t.save();
                     if(A.IDMACHINE  != null){
                         myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("product").setValue(product);
+                        A.IDMACHINE.setProducts(product);
                         Intent it = new Intent(SettingEmployActivity.this, MainActivity.class);
                         startActivity(it);
                         finish();

@@ -1,23 +1,14 @@
 package br.com.autochoop;
 
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.hardware.usb.UsbAccessory;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.ParcelFileDescriptor;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -30,17 +21,14 @@ import com.orm.query.Condition;
 import com.orm.query.Select;
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import br.com.autochoop.model.Cards;
 import br.com.autochoop.model.Machine;
 import br.com.autochoop.model.Products;
+import br.com.autochoop.model.Sale;
 import br.com.autochoop.model.Telemetria;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,21 +58,13 @@ public class MainActivity extends AppCompatActivity {
     TextView textView;
     @BindView(R.id.tv_value_buy2)
     TextView tvValueBuy2;
-    //private AdkManager mAdkManager;
-    private static final String TAG = "ArduinoAccessory";
-
-    /*private UsbManager mUsbManager;
-    private PendingIntent mPermissionIntent;
-    private boolean mPermissionRequestPending;
-    private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";*/
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("autobeer");
-  /*  UsbAccessory mAccessory;
-    ParcelFileDescriptor mFileDescriptor;
-    FileInputStream mInputStream;
-    FileOutputStream mOutputStream;*/
-
-
+    boolean operationSale = false;
+    Sale sale ;
+    Machine machine;
+    Double totValue = 0.0;
+    Double valueCreditCard ;
 
 
   /*  private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
@@ -165,38 +145,120 @@ public class MainActivity extends AppCompatActivity {
         });*/
         //tvDescription.setText("Este estilo de cerveja é considerado, por mim e muitos, ideal para dias quentes pois é bastante refrescante e nutritivo. Tanto é que cervejas sem álcool, na Alemanha, são praticamente todas feitas a base de Weissbier sendo, cientificamente comprovado, mais eficientes do que os atuais energéticos");
         setupValues();
+      //  setupCard();
     }
     void setupValues() {
+        if(A.IDMACHINE != null) {
+            myRef = database.getReference("autobeer");
+            Query queryExtract = myRef.child("machines").orderByChild("idmachine").equalTo(A.IDMACHINE.getIdmachine());
+            if (queryExtract != null) {
 
-        myRef = database.getReference("autobeer");
-        Query queryExtract = myRef.child("machines").orderByChild("idmachine").equalTo("150");
-        if (queryExtract != null) {
+            }
 
-        }
-        queryExtract.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                System.out.println("veio "+dataSnapshot);
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    Machine machine = data.getValue(Machine.class);
-                    calculateValues(machine);
+            queryExtract.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    System.out.println("veio maquina " + dataSnapshot);
+
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        machine = data.getValue(Machine.class);
+
+                    }
+
+
+                    if(operationSale && machine.isSale()){
+                        calculateValues();
+                    }else if( operationSale && !machine.isSale()){
+                        finalSale();
+                    }else if(!operationSale && machine.isSale()){
+                        newSale();
+                        calculateValues();
+                    }
 
                 }
 
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    A.showMsg(databaseError.getMessage() + "\n" + databaseError.getDetails(), MainActivity.this);
+                }
+            });
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                A.showMsg(databaseError.getMessage() + "\n" + databaseError.getDetails(), MainActivity.this);
-            }
-        });
 
+
+        }
+    }
+    void setupCard(){
+if(A.IDMACHINE != null) {
+    /*   // myRef = database.getReference("autobeer");
+       ValueEventListener postvalue = new ValueEventListener() {
+           @Override
+           public void onDataChange(DataSnapshot dataSnapshot) {
+               System.out.println(" datas "+ dataSnapshot );
+              valueCreditCard = dataSnapshot.child("cards").child("84 88 68 1E").child("valuecredcard").getValue(Double.class);
+               System.out.println("machine"+valueCreditCard);
+           }
+
+           @Override
+           public void onCancelled(DatabaseError databaseError) {
+
+           }
+       };
+       myRef.addValueEventListener(postvalue);*/
+    myRef = database.getReference("autobeer");
+    Query queryExtract = myRef.child("cards").child(A.IDMACHINE.getIdcard());
+    if (queryExtract != null) {
+
+    }
+    queryExtract.addValueEventListener(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            System.out.println(" datas " + dataSnapshot);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    });
+}
+    }
+    private void newSale() {
+     //  setupCard();
+        System.out.println("machine"+valueCreditCard);
+        operationSale = true;
+       sale =  new Sale();
+        sale.setMachine(machine);
+        sale.setStatus(1);
+        sale.setIdcard(A.IDMACHINE.getIdcard());
+        sale.setDateSale(new Timestamp(new Date().getTime()));
+        sale.setValue(0.0);
+    }
+
+    private void finalSale() {
+        operationSale = false;
+        sale.setStatus(0);
+        sale.setValue(totValue);
+        myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("sale").setValue(false);
+        myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("extractvalue").setValue(0.0);
+        myRef.child("cards").child(A.IDMACHINE.getIdEmploy()).child("valuecredcard").setValue(this.machine.getCards().getValuecredcard() - totValue);
+        myRef.child("sale").setValue(sale);
 
 
     }
 
-    private void calculateValues(Machine machine) {
-      //  Double balance =  Double.parseDouble(tvValueBuy.getText().toString());
+    private void calculateValues() {
+        if(valueCreditCard >= totValue){
+            Double productValue = Double.parseDouble(machine.getProducts().getValueproduct().replace(".","").replace(",","."));
+            Double extractValue = machine.getExtactvalue() / 1000;
+            totValue = extractValue * productValue;
+            tvValueBuy2.setText(A.formatarValor(machine.getCards().getValuecredcard() - totValue));
+            tvValueBuy.setText(A.formatarValor(totValue));
+
+        }else{
+            A.showMsg("Cŕedito expirado \n recarrege oi cartão", MainActivity.this);
+        }
+
+        //  Double balance =  Double.parseDouble(tvValueBuy.getText().toString());
 
 
     }

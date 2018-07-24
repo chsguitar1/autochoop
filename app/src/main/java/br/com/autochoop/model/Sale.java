@@ -2,6 +2,7 @@ package br.com.autochoop.model;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -9,8 +10,8 @@ import java.util.Date;
  */
 @IgnoreExtraProperties
 public class Sale {
-    Date dateSale;
-    Cards cards;
+    Timestamp dateSale;
+    String idcard;
     Double value;
     Machine machine;
     int status;
@@ -19,28 +20,29 @@ public class Sale {
     public Sale() {
     }
 
-    public Sale(Date dateSale, Cards cards, Double value, Machine machine, int status) {
+
+    public Sale(Timestamp dateSale, String idcard, Double value, Machine machine, int status) {
         this.dateSale = dateSale;
-        this.cards = cards;
+        this.idcard = idcard;
         this.value = value;
         this.machine = machine;
         this.status = status;
     }
 
-    public Date getDateSale() {
+    public Timestamp getDateSale() {
         return dateSale;
     }
 
-    public void setDateSale(Date dateSale) {
+    public void setDateSale(Timestamp dateSale) {
         this.dateSale = dateSale;
     }
 
-    public Cards getCards() {
-        return cards;
+    public String getIdcard() {
+        return idcard;
     }
 
-    public void setCards(Cards cards) {
-        this.cards = cards;
+    public void setIdcard(String idcard) {
+        this.idcard = idcard;
     }
 
     public Double getValue() {

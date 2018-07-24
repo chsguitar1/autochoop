@@ -11,17 +11,12 @@ public class Machine {
     String idmachine;
     boolean status;
     Products products;
+    boolean sale;
+    Double extactvalue;
+    boolean online;
+    String idcard;
+    Cards cards;
 
-
-
-    public Machine() {
-    }
-
-    public Machine(String idEmploy, String idmachine, boolean status, String extractvalue) {
-        this.idEmploy = idEmploy;
-        this.idmachine = idmachine;
-        this.status = status;
-    }
 
     public String getIdEmploy() {
         return idEmploy;
@@ -54,4 +49,61 @@ public class Machine {
     public void setProducts(Products products) {
         this.products = products;
     }
+
+    public boolean isSale() {
+        return sale;
+    }
+
+    public void setSale(boolean sale) {
+        this.sale = sale;
+    }
+
+    public Double getExtactvalue() {
+        return extactvalue;
+    }
+
+    public void setExtactvalue(Double extactvalue) {
+        this.extactvalue = extactvalue;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    public String getIdcard() {
+        return idcard;
+    }
+
+    public void setIdcard(String idcard) {
+        this.idcard = idcard;
+    }
+
+    public Cards getCards() {
+        return cards;
+    }
+
+    public void setCards(Cards cards) {
+        this.cards = cards;
+    }
+
+    @Override
+    public String toString() {
+        return "Machine{" +
+                "idEmploy='" + idEmploy + '\'' +
+                ", idmachine='" + idmachine + '\'' +
+                ", status=" + status +
+                ", products=" + products +
+                ", sale=" + sale +
+                ", extactvalue=" + extactvalue +
+                ", online=" + online +
+                ", idcard='" + idcard + '\'' +
+                ", cards=" + cards +
+                '}';
+    }
 }
+
+
