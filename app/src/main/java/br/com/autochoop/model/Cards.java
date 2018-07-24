@@ -36,4 +36,13 @@ public class Cards {
     public void setValuecredcard(Double valuecredcard) {
         this.valuecredcard = valuecredcard;
     }
+
+    @Override
+    public String toString() {
+        return "Cards{" +
+                "idEmploy='" + idEmploy + '\'' +
+                ", idcard='" + idcard + '\'' +
+                ", valuecredcard=" + valuecredcard +
+                '}';
+    }
 }

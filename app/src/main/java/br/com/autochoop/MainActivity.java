@@ -144,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
         //tvDescription.setText("Este estilo de cerveja é considerado, por mim e muitos, ideal para dias quentes pois é bastante refrescante e nutritivo. Tanto é que cervejas sem álcool, na Alemanha, são praticamente todas feitas a base de Weissbier sendo, cientificamente comprovado, mais eficientes do que os atuais energéticos");
-    //    setupValues();
-      //  setupCard();
+        //    setupValues();
+        //  setupCard();
     }
 
     @Override
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
     void setupValues() {
         if(A.IDMACHINE != null) {
-           // myRef = database.getReference("autobeer");
+            // myRef = database.getReference("autobeer");
             Query queryExtract = myRef.child("machines").orderByChild("idmachine").equalTo(A.IDMACHINE.getIdmachine());
             if (queryExtract != null) {
 
@@ -171,15 +171,19 @@ public class MainActivity extends AppCompatActivity {
                         machine = data.getValue(Machine.class);
 
                     }
-
-
                     if(operationSale && machine.isSale()){
                         calculateValues();
                     }else if( operationSale && !machine.isSale()){
                         finalSale();
-                    }else if(!operationSale && machine.isSale()){
+                    }else if(!operationSale && (machine.isSale() && machine.getValuecredcard() >0)){
                         newSale();
                         calculateValues();
+                    }else{
+                        /*myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("sale").setValue(false);
+                        myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("extractvalue").setValue(0.0);
+                        myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("valuecredcard").setValue(0.0);*/
+
+
                     }
 
                 }
@@ -195,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     void setupCard(){
-if(A.IDMACHINE != null) {
+        if(A.IDMACHINE != null) {
     /*   // myRef = database.getReference("autobeer");
        ValueEventListener postvalue = new ValueEventListener() {
            @Override
@@ -211,29 +215,29 @@ if(A.IDMACHINE != null) {
            }
        };
        myRef.addValueEventListener(postvalue);*/
-   // myRef = database.getReference("autobeer/cards");
-    Query queryExtract = myRefCard.child("cards").child(A.IDMACHINE.getIdcard()).equalTo(A.IDMACHINE.getIdcard());
-    if (queryExtract != null) {
+            // myRef = database.getReference("autobeer/cards");
+            Query queryExtract = myRefCard.child("cards").child(A.IDMACHINE.getIdcard()).equalTo(A.IDMACHINE.getIdcard());
+            if (queryExtract != null) {
 
-    }
-    queryExtract.addValueEventListener(new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            System.out.println(" datas " + dataSnapshot);
+            }
+            queryExtract.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    System.out.println(" datas " + dataSnapshot);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    });
-}
     }
     private void newSale() {
 
         System.out.println("machine:="+valueCreditCard);
         operationSale = true;
-       sale =  new Sale();
+        sale =  new Sale();
         sale.setMachine(machine);
         sale.setStatus(1);
         sale.setIdcard(A.IDMACHINE.getIdcard());
@@ -249,7 +253,7 @@ if(A.IDMACHINE != null) {
         myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("extractvalue").setValue(0.0);
         myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("valuecredcard").setValue(0.0);
         myRef.child("cards").child(A.IDMACHINE.getIdcard()).child("valuecredcard").setValue(this.machine.getValuecredcard() - totValue);
-        myRef.child("sales").child(A.timeParaString(sale.getDateSale())).child(A.IDMACHINE.getIdmachine()).setValue(sale);
+        myRef.child("clients").child(A.IDMACHINE.getIdEmploy()).child("sales").child(A.timeParaString(sale.getDateSale())).child(A.IDMACHINE.getIdmachine()).setValue(sale);
         tvValueBuy2.setText(A.formatarValor(0.00));
         tvValueBuy.setText(A.formatarValor(0.00));
 

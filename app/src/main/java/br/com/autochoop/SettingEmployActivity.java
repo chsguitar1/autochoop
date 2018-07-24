@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import br.com.autochoop.model.Cards;
 import br.com.autochoop.model.Machine;
 import br.com.autochoop.model.Products;
 import br.com.autochoop.model.Telemetria;
@@ -148,7 +149,49 @@ public class SettingEmployActivity extends AppCompatActivity {
         }
 
     }
+    void setupCard(){
+        if(A.IDMACHINE != null) {
+       // myRef = database.getReference("autobeer");
+            final Double[] valueCreditCard = new Double[1];
+       ValueEventListener postvalue = new ValueEventListener() {
+           @Override
+           public void onDataChange(DataSnapshot dataSnapshot) {
+               System.out.println(" datas "+ dataSnapshot );
+              valueCreditCard[0] = dataSnapshot.child("cards").child(A.IDMACHINE.getIdcard()).child("valuecredcard").getValue(Double.class);
+               System.out.println("machine"+ valueCreditCard[0]);
+               A.IDMACHINE.setValuecredcard(valueCreditCard[0]);
+           }
 
+           @Override
+           public void onCancelled(DatabaseError databaseError) {
+
+           }
+       };
+       myRef.addValueEventListener(postvalue);
+//             myRef = database.getReference("autobeer");
+//            Query queryExtract = myRef.child("cards").;
+//            if (queryExtract != null) {
+//
+//            }
+//            queryExtract.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    System.out.println(" datas " + dataSnapshot);
+//                    Cards cards = null;
+//                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+//                       cards  = data.getValue(Cards.class);
+//
+//                    }
+//                    System.out.println("cartao:= "+ cards.toString());
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+        }
+    }
     public class RecyclerViewProducts extends RecyclerView.Adapter<RecyclerViewProducts.ViewHolder> {
 
         Context context;
@@ -187,7 +230,7 @@ public class SettingEmployActivity extends AppCompatActivity {
                     Telemetria t = new Telemetria(new Date(), Integer.parseInt(product.getIdproduct()));
                     t.save();
                     if(A.IDMACHINE  != null){
-                     //   myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("product").setValue(product);
+                        myRef.child("machines").child(A.IDMACHINE.getIdmachine()).child("product").setValue(product);
                         A.IDMACHINE.setProduct(product);
                         Intent it = new Intent(SettingEmployActivity.this, MainActivity.class);
                         startActivity(it);
@@ -256,6 +299,7 @@ public class SettingEmployActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     A.IDMACHINE = machine;
+                    setupCard();
                     setupRecyclerViewProducts();
                 }
             });
